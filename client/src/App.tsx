@@ -8,7 +8,7 @@ function App() {
       <Card>
         <h1>Hello world</h1>
       </Card>
-      <PrimaryButton label="Buttson" />
+      <PrimaryButton label="Button" />
     </div>
   );
 }
