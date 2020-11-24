@@ -45,3 +45,23 @@ p {
   font-weight: 300;
   font-size: 16px;
 }
+
+input {
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+input::placeholder {
+  font-weight: 300;
+  font-size: 16px;
+}
+
+
+.pageContent {
+  margin: 0 auto;
+  padding: 4rem var(--padding-content);
+  max-width: var(--max-width-content);
+}
