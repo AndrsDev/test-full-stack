@@ -5,6 +5,7 @@ import PrimaryButton from 'components/primary_button';
 import Avatar from 'components/avatar';
 import Modal from 'components/modal';
 import SecondaryButton from 'components/secondary_button';
+import GoogleMapReact from 'google-map-react';
 
 function App() {
 
@@ -57,6 +58,8 @@ function App() {
     setModalVisibility(false);
   }
 
+  console.log(process.env.MAPS_API_KEY);
+
   return (
     <div className="pageContent">
 
@@ -93,7 +96,22 @@ function App() {
         <div className={styles.modalContent}>
           <h1>Edit user</h1>
           <div className={styles.modalContentLayout}>
-            <div>Map placeholder</div>
+            <div>
+              <GoogleMapReact
+                bootstrapURLKeys={{ key: 'MAPS_API_KEY' }}
+                options={{
+                  fullscreenControl: false,
+                  zoomControl: false,
+                }}
+                defaultCenter={{
+                  lat: 59.95,
+                  lng: 30.33
+                }}
+                defaultZoom={11}
+              >
+                
+              </GoogleMapReact>
+            </div>
             <div>
               <form>
                 <p><strong>Name</strong></p>

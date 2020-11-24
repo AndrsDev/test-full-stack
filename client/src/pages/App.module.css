@@ -81,8 +81,12 @@
 }
 
 .modalContentLayout {
+  margin-top: 36px;
+  margin-bottom: 36px;
   display: grid;
   grid-template-areas: "map form";
+  grid-template-columns: 2fr 3fr;
+  column-gap: 24px;
 }
 
 .modalContentLayout input {
