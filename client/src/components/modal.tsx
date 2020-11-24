@@ -12,7 +12,7 @@ function Modal({ isOpen, onClose, children } : Props) {
   return ReactDOM.createPortal(
     <div className={`${styles.modalBackground} ${!isOpen ? styles.hidden: ''}`} onClick={onClose} >
       <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
-        <h1>Hello world</h1>
+        {children}
       </div>
     </div>,
     document.getElementById('modal')!

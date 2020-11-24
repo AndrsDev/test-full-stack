@@ -4,6 +4,7 @@ import styles from './App.module.css';
 import PrimaryButton from 'components/primary_button';
 import Avatar from 'components/avatar';
 import Modal from 'components/modal';
+import SecondaryButton from 'components/secondary_button';
 
 function App() {
 
@@ -89,7 +90,26 @@ function App() {
         <PrimaryButton label="Load More" />
       </div>
       <Modal isOpen={modalVisibility} onClose={closeModal}>
-        <div>Modal</div>
+        <div className={styles.modalContent}>
+          <h1>Edit user</h1>
+          <div className={styles.modalContentLayout}>
+            <div>Map placeholder</div>
+            <div>
+              <form>
+                <p><strong>Name</strong></p>
+                <input name="name" placeholder="Name"/>
+                <p><strong>Address</strong></p>
+                <input name="address" placeholder="Address"/>
+                <p><strong>Description</strong></p>
+                <input name="description" placeholder="Description"/>
+              </form>
+              <div className={styles.modalButtonsContainer}>
+                <PrimaryButton label="Save" />
+                <SecondaryButton label="Cancel" onClick={closeModal}/>
+              </div>
+            </div>
+          </div>
+        </div>
       </Modal>
     </div>
   );
