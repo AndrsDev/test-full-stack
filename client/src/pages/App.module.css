@@ -63,3 +63,10 @@
   margin-top: 0px;
   margin-bottom: 4px;
 }
+
+.buttonContainer {
+  width: 100%;
+  display: flex;
+  margin: 64px 0px;
+  justify-content: center;
+}

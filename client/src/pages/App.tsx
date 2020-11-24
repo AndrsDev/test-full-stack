@@ -46,7 +46,7 @@ function App() {
   ]
 
   return (
-    <main className="pageContent">
+    <div className="pageContent">
 
       <header className={styles.header}>
         <h1>Users list</h1>
@@ -74,9 +74,12 @@ function App() {
           )
         }
       </main>
+      <div className={styles.buttonContainer}>
+        <PrimaryButton label="Load More" />
+      </div>
       {/* <PrimaryButton label="Button" />
       <input placeholder="Placeholder" /> */}
-    </main>
+    </div>
   );
 }
 
