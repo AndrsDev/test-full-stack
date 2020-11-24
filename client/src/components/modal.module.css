@@ -1,0 +1,26 @@
+.modalBackground {
+  opacity: 1;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.3);
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease-in-out;
+  pointer-events: all;
+}
+
+.modalContainer {
+  border-radius: 8px;
+  background-color: var(--color-white);
+  transition: all 0.3s ease-in-out;
+  /* box-shadow: 0px 5px 10px 0px rgba(0,0,0,0.08); */
+}
+
+.hidden {
+  pointer-events: none;
+  opacity: 0;
+}
