@@ -6,8 +6,10 @@ import GoogleMapReact from 'google-map-react';
 import MapsService from 'services/maps.service';
 import PrimaryButton from './primary-button';
 import SecondaryButton from './secondary-button';
+import Marker from './marker';
 
 const mapsService = new MapsService(process.env.REACT_APP_MAPS_API_KEY!)
+
 
 interface Props {
   user: User,
@@ -24,18 +26,19 @@ function EditUserModal({ isOpen, user, onSave, onClose } : Props ) {
         <div className={styles.modalContentLayout}>
           <div>
             <GoogleMapReact
+              yesIWantToUseGoogleMapApiInternals
               bootstrapURLKeys={{ key: process.env.REACT_APP_MAPS_API_KEY! }}
               options={{
                 fullscreenControl: false,
                 zoomControl: false,
               }}
-              defaultCenter={{
-                lat: 59.95,
-                lng: 30.33
+              defaultCenter ={{
+                lat: 14.63,
+                lng: -90.50
               }}
-              defaultZoom={11}
+              defaultZoom={14}
             >
-              
+              <Marker lat={14.63} lng={-90.50} />
             </GoogleMapReact>
           </div>
           <div>
