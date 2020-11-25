@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './secondary_button.module.css';
+import styles from './secondary-button.module.css';
 
 interface Props {
   label: String,
