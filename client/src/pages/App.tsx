@@ -98,7 +98,7 @@ function App() {
           <div className={styles.modalContentLayout}>
             <div>
               <GoogleMapReact
-                bootstrapURLKeys={{ key: 'MAPS_API_KEY' }}
+                bootstrapURLKeys={{ key: process.env.REACT_APP_MAPS_API_KEY! }}
                 options={{
                   fullscreenControl: false,
                   zoomControl: false,
