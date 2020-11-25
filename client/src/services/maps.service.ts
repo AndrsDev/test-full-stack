@@ -6,10 +6,15 @@ class MapsService {
     this.mapsApiKey = mapsApiKey;
   }
 
-  geoCodeLocation() {
-    return "Hello";
-//     https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,
-// +Mountain+View,+CA&key=YOUR_API_KEY
+  async geoCodeLocation(address: string) {
+    const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${this.mapsApiKey}`)
+    const data = await response.json()
+    
+    if(data.results?.length === 0){
+      return null
+    }
+
+    return data.results[0].geometry.location
   }
 
 }

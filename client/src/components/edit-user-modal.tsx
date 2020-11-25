@@ -3,12 +3,12 @@ import styles from './edit-user-modal.module.css';
 import User from '../models/user.model';
 import Modal from './modal';
 import GoogleMapReact from 'google-map-react';
-// import MapsService from 'services/maps.service';
+import MapsService from 'services/maps.service';
 import PrimaryButton from './primary-button';
 import SecondaryButton from './secondary-button';
 import Marker from './marker';
 
-// const mapsService = new MapsService(process.env.REACT_APP_MAPS_API_KEY!)
+const mapsService = new MapsService(process.env.REACT_APP_MAPS_API_KEY!)
 
 
 interface Props {
@@ -21,21 +21,30 @@ interface Props {
 function EditUserModal({ isOpen, user, onSave, onClose } : Props ) {
 
   let typingTimer: any;
-  let doneTypingInterval = 3000;
+
+  const [location, setLocation] = useState(user.address);
 
   const [coordinates, setCoordinates] = useState({
     lat: 14.63,
     lng: -90.50
   })
 
-  function doneTyping () {
-    console.log("should update pin")
+  async function doneTyping (location: string) {
+    try {
+      setLocation(location);
+      let result = await mapsService.geoCodeLocation(location);
+      if(result) {
+        setCoordinates(result)
+      }   
+    } catch (e){
+      console.error(e);
+    }
   }
 
   const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => { 
     clearTimeout(typingTimer);
     if (event.target.value) {
-      typingTimer = setTimeout(doneTyping, doneTypingInterval);
+      typingTimer = setTimeout(() => doneTyping(event.target.value), 1000);
     }
   }
 
@@ -52,6 +61,7 @@ function EditUserModal({ isOpen, user, onSave, onClose } : Props ) {
                 fullscreenControl: false,
                 zoomControl: false,
               }}
+              center={coordinates}
               defaultCenter ={{
                 lat: 14.63,
                 lng: -90.50
@@ -64,11 +74,11 @@ function EditUserModal({ isOpen, user, onSave, onClose } : Props ) {
           <div>
             <form>
               <p><strong>Name</strong></p>
-              <input name="name" placeholder="Name" value={user.name}/ >
+              <input name="name" placeholder="Name" defaultValue={user.name}/ >
               <p><strong>Location</strong></p>
-              <input name="location" placeholder="Location" onChange={handleLocationChange}/>
+              <input name="location" placeholder="Location" defaultValue={user.address} onChange={handleLocationChange}/>
               <p><strong>Description</strong></p>
-              <input name="description" placeholder="Description"/>
+              <input name="description" placeholder="Description" defaultValue={user.description} />
             </form>
             <div className={styles.modalButtonsContainer}>
               <PrimaryButton label="Save" />
