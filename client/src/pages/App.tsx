@@ -16,13 +16,12 @@ function App() {
   const [nextToken, setNextToken ] = useState<string | null>(null);
   const [loadedAllUsers, setLoadedAllUsers ] = useState<boolean>(false);
   const [modalVisibility, setModalVisibility] = useState<boolean>(false);
-  const [editingUser, setEditingUser ] = useState<number | null>(null);
+  const [editingUser, setEditingUser ] = useState<User>(UserEmpty);
   const [users, setUsers] = useState<Array<User>>([]);
   const batchLength: number = 6;
 
-
-  const openModal = (index: number) => {
-    setEditingUser(index);
+  const openModal = (user: User) => {
+    setEditingUser(user);
     setModalVisibility(true);
   }
 
@@ -47,6 +46,7 @@ function App() {
     loadUsers(nextToken);
   }
 
+
   useEffect(() => {
     loadUsers(null);
   }, [])
@@ -64,7 +64,7 @@ function App() {
               key={index}
               user={user}
               imgURL={`https://source.unsplash.com/128x128/?face,${index}`}
-              onEdit={() => openModal(index)}
+              onEdit={() => openModal(user)}
             />
           )
         }
@@ -77,7 +77,7 @@ function App() {
         }
       </div>
       {
-        editingUser !== null && <EditUserModal isOpen={modalVisibility} onClose={closeModal} user={users[editingUser!]} />
+        modalVisibility && <EditUserModal isOpen={modalVisibility} onClose={closeModal} user={editingUser} />
       }
     </div>
   );
