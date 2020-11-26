@@ -16,13 +16,13 @@ function App() {
   const [nextToken, setNextToken ] = useState<string | null>(null);
   const [loadedAllUsers, setLoadedAllUsers ] = useState<boolean>(false);
   const [modalVisibility, setModalVisibility] = useState<boolean>(false);
-  const [editingUser, setEditingUser ] = useState<User>(UserEmpty);
+  const [editingUser, setEditingUser ] = useState<number | null>(null);
   const [users, setUsers] = useState<Array<User>>([]);
   const batchLength: number = 6;
 
 
-  const openModal = (user: User) => {
-    setEditingUser(user);
+  const openModal = (index: number) => {
+    setEditingUser(index);
     setModalVisibility(true);
   }
 
@@ -64,7 +64,7 @@ function App() {
               key={index}
               user={user}
               imgURL={`https://source.unsplash.com/128x128/?face,${index}`}
-              onEdit={() => openModal(user)}
+              onEdit={() => openModal(index)}
             />
           )
         }
@@ -76,8 +76,9 @@ function App() {
             : <PrimaryButton label="Load More" onClick={handleLoadMoreUsers}/>
         }
       </div>
-      <EditUserModal isOpen={modalVisibility} onClose={closeModal} user={editingUser} />
-  
+      {
+        editingUser !== null && <EditUserModal isOpen={modalVisibility} onClose={closeModal} user={users[editingUser!]} />
+      }
     </div>
   );
 }
