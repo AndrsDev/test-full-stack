@@ -5,26 +5,21 @@ import PrimaryButton from 'components/primary-button';
 import EditUserModal from 'components/edit-user-modal';
 import User, { UserEmpty } from 'models/user.model';
 import UserCard from 'components/user-card';
-import Amplify, { API, graphqlOperation } from 'aws-amplify';
+import Amplify from 'aws-amplify';
 import awsconfig from '../aws-exports.js';
+import UsersService from 'services/users.service';
 
 Amplify.configure(awsconfig);
-
-const listUsers = `
-  query list {
-    listUsers (limit: 10) {
-      items {
-        id name address dob description
-      }
-      nextToken
-    }
-  }
-`
+const usersService = new UsersService();
 
 function App() {
-  const [modalVisibility, setModalVisibility] = useState(false);
-  const [editingUser, setEditingUser ] = useState(UserEmpty);
-  const [users, setUsers] = useState([])
+  const [nextToken, setNextToken ] = useState<string | null>(null);
+  const [loadedAllUsers, setLoadedAllUsers ] = useState<boolean>(false);
+  const [modalVisibility, setModalVisibility] = useState<boolean>(false);
+  const [editingUser, setEditingUser ] = useState<User>(UserEmpty);
+  const [users, setUsers] = useState<Array<User>>([]);
+  const batchLength: number = 6;
+
 
   const openModal = (user: User) => {
     setEditingUser(user);
@@ -35,14 +30,25 @@ function App() {
     setModalVisibility(false);
   }
 
-  const loadUsers = async () => {
-    const response: any = await API.graphql(graphqlOperation(listUsers));
-    const items = response.data.listUsers.items;
-    setUsers(users.concat(items))
+  const loadUsers = async (token: string | null) => {
+    if(!loadedAllUsers){
+      const response = await usersService.getUsersList(batchLength, token)
+      setUsers(users.concat(response.items))
+  
+      if(response.token) {
+        setNextToken(response.token);
+      } else {
+        setLoadedAllUsers(true)
+      }
+    }
+  }
+
+  const handleLoadMoreUsers = () => {
+    loadUsers(nextToken);
   }
 
   useEffect(() => {
-    loadUsers();
+    loadUsers(null);
   }, [])
 
   return (
@@ -64,9 +70,14 @@ function App() {
         }
       </main>
       <div className={styles.buttonContainer}>
-        <PrimaryButton label="Load More" />
+        {
+          loadedAllUsers 
+            ? <p>Loaded all users</p>
+            : <PrimaryButton label="Load More" onClick={handleLoadMoreUsers}/>
+        }
       </div>
       <EditUserModal isOpen={modalVisibility} onClose={closeModal} user={editingUser} />
+  
     </div>
   );
 }
