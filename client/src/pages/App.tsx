@@ -20,7 +20,6 @@ function App() {
   const [users, setUsers] = useState<Array<User>>([]);
   const batchLength: number = 6;
 
-
   const openModal = (user: User) => {
     setEditingUser(user);
     setModalVisibility(true);
@@ -46,6 +45,7 @@ function App() {
   const handleLoadMoreUsers = () => {
     loadUsers(nextToken);
   }
+
 
   useEffect(() => {
     loadUsers(null);
@@ -76,8 +76,9 @@ function App() {
             : <PrimaryButton label="Load More" onClick={handleLoadMoreUsers}/>
         }
       </div>
-      <EditUserModal isOpen={modalVisibility} onClose={closeModal} user={editingUser} />
-  
+      {
+        modalVisibility && <EditUserModal isOpen={modalVisibility} onClose={closeModal} user={editingUser} />
+      }
     </div>
   );
 }

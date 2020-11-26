@@ -3,32 +3,32 @@ import styles from './edit-user-modal.module.css';
 import User from '../models/user.model';
 import Modal from './modal';
 import GoogleMapReact from 'google-map-react';
+import UsersService from 'services/users.service';
 import MapsService from 'services/maps.service';
 import PrimaryButton from './primary-button';
 import SecondaryButton from './secondary-button';
 import Marker from './marker';
 
+const usersService = new UsersService();
 const mapsService = new MapsService(process.env.REACT_APP_MAPS_API_KEY!)
-
 
 interface Props {
   user: User,
   isOpen: boolean,
-  onSave?: () => void,
-  onClose?: () => void,
+  onClose: () => void,
 }
 
-function EditUserModal({ isOpen, user, onSave, onClose } : Props ) {
-
-  let typingTimer: any;
-
-  const [location, setLocation] = useState(user.address);
-
+function EditUserModal({ isOpen, user, onClose } : Props ) {
+  const [name, setName] = useState<string>(user.name);
+  const [description, setDescription] = useState<string>(user.description);
+  const [location, setLocation] = useState<string>(user.address);
   const [coordinates, setCoordinates] = useState({
     lat: 14.63,
     lng: -90.50
   })
 
+  let typingTimer: any;
+  
   async function doneTyping (location: string) {
     try {
       setLocation(location);
@@ -46,6 +46,14 @@ function EditUserModal({ isOpen, user, onSave, onClose } : Props ) {
     if (event.target.value) {
       typingTimer = setTimeout(() => doneTyping(event.target.value), 1000);
     }
+  }
+
+  const handleSave = () => {
+    if(name) user.name = name;
+    if(location) user.address = location;
+    if(description) user.description = description;
+    usersService.updateUser(user);
+    onClose();
   }
 
   return (    
@@ -74,14 +82,14 @@ function EditUserModal({ isOpen, user, onSave, onClose } : Props ) {
           <div>
             <form>
               <p><strong>Name</strong></p>
-              <input name="name" placeholder="Name" defaultValue={user.name}/ >
+              <input name="name" placeholder="Name" defaultValue={user.name} onChange={event => setName(event.target.value)}/ >
               <p><strong>Location</strong></p>
               <input name="location" placeholder="Location" defaultValue={user.address} onChange={handleLocationChange}/>
               <p><strong>Description</strong></p>
-              <input name="description" placeholder="Description" defaultValue={user.description} />
+              <input name="description" placeholder="Description" defaultValue={user.description} onChange={event => setDescription(event.target.value)}/>
             </form>
             <div className={styles.modalButtonsContainer}>
-              <PrimaryButton label="Save" />
+              <PrimaryButton label="Save" onClick={handleSave}/>
               <SecondaryButton label="Cancel" onClick={onClose}/>
             </div>
           </div>
