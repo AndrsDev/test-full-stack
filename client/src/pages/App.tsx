@@ -1,53 +1,30 @@
-import React, { useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react';
 import styles from './App.module.css';
 import PrimaryButton from 'components/primary-button';
 import EditUserModal from 'components/edit-user-modal';
 import User, { UserEmpty } from 'models/user.model';
 import UserCard from 'components/user-card';
+import Amplify, { API, graphqlOperation } from 'aws-amplify';
+import awsconfig from '../aws-exports.js';
 
+Amplify.configure(awsconfig);
+
+const listUsers = `
+  query list {
+    listUsers (limit: 10) {
+      items {
+        id name address dob description
+      }
+      nextToken
+    }
+  }
+`
 
 function App() {
   const [modalVisibility, setModalVisibility] = useState(false);
   const [editingUser, setEditingUser ] = useState(UserEmpty);
-
-  const data: Array<User> = [
-    {
-      "id": "1",               
-      "name": "Andres Sanabria",      
-      "dob": "23-04-1998",                 
-      "address": "Guatemala",         
-      "description": "Software developer",
-      "createdAt": "24-11-2020",
-      "updatedAt": "24-11-2020" 
-    },
-    {
-      "id": "2",               
-      "name": "Manuel Castro",      
-      "dob": "23-04-1998",                 
-      "address": "Guatemala",         
-      "description": "Software developer",
-      "createdAt": "24-11-2020",
-      "updatedAt": "24-11-2020" 
-    },
-    {
-      "id": "1",               
-      "name": "Andres Sanabria",      
-      "dob": "23-04-1998",                 
-      "address": "Guatemala",         
-      "description": "Software developer",
-      "createdAt": "24-11-2020",
-      "updatedAt": "24-11-2020" 
-    },
-    {
-      "id": "1",               
-      "name": "Andres Sanabria",      
-      "dob": "23-04-1998",                 
-      "address": "Guatemala",         
-      "description": "Software developer",
-      "createdAt": "24-11-2020",
-      "updatedAt": "24-11-2020" 
-    },
-  ]
+  const [users, setUsers] = useState([])
 
   const openModal = (user: User) => {
     setEditingUser(user);
@@ -58,6 +35,16 @@ function App() {
     setModalVisibility(false);
   }
 
+  const loadUsers = async () => {
+    const response: any = await API.graphql(graphqlOperation(listUsers));
+    const items = response.data.listUsers.items;
+    setUsers(users.concat(items))
+  }
+
+  useEffect(() => {
+    loadUsers();
+  }, [])
+
   return (
     <div className="pageContent">
       <header className={styles.header}>
@@ -66,12 +53,12 @@ function App() {
       </header>
       <main className={styles.cardsGrid}>
         {
-          data.map((element, index) => 
+          users.map((user, index) => 
             <UserCard 
               key={index}
-              user={element}
+              user={user}
               imgURL={`https://source.unsplash.com/128x128/?face,${index}`}
-              onEdit={() => openModal(element)}
+              onEdit={() => openModal(user)}
             />
           )
         }
