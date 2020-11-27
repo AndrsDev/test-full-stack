@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './edit-user-modal.module.css';
 import User from '../models/user.model';
 import Modal from './modal';
@@ -29,7 +29,7 @@ function EditUserModal({ isOpen, user, onClose } : Props ) {
 
   let typingTimer: any;
   
-  async function doneTyping (location: string) {
+  async function updateLocation (location: string) {
     try {
       setLocation(location);
       let result = await mapsService.geoCodeLocation(location);
@@ -44,7 +44,7 @@ function EditUserModal({ isOpen, user, onClose } : Props ) {
   const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => { 
     clearTimeout(typingTimer);
     if (event.target.value) {
-      typingTimer = setTimeout(() => doneTyping(event.target.value), 1000);
+      typingTimer = setTimeout(() => updateLocation(event.target.value), 1000);
     }
   }
 
@@ -55,6 +55,10 @@ function EditUserModal({ isOpen, user, onClose } : Props ) {
     usersService.updateUser(user);
     onClose();
   }
+
+  useEffect(() => {
+    updateLocation(user.address)
+  }, [])
 
   return (    
     <Modal isOpen={isOpen} onClose={onClose}>
