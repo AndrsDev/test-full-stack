@@ -13,6 +13,7 @@ Amplify.configure(awsconfig);
 const usersService = new UsersService();
 
 function App() {
+  const [searchString, setSearchString] = useState<string>("");
   const [nextToken, setNextToken ] = useState<string | null>(null);
   const [loadedAllUsers, setLoadedAllUsers ] = useState<boolean>(false);
   const [modalVisibility, setModalVisibility] = useState<boolean>(false);
@@ -43,23 +44,26 @@ function App() {
   }
 
   const handleLoadMoreUsers = () => {
+    setSearchString("");
     loadUsers(nextToken);
   }
-
 
   useEffect(() => {
     loadUsers(null);
   }, [])
 
+  
+  const filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchString.toLowerCase()));
+
   return (
     <div className="pageContent">
       <header className={styles.header}>
         <h1>Users list</h1>
-        <input className={styles.searchBar} placeholder="Search..." />
+        <input className={styles.searchBar} placeholder="Search..." value={searchString} onChange={e => setSearchString(e.target.value)}/>
       </header>
       <main className={styles.cardsGrid}>
         {
-          users.map((user, index) => 
+          filteredUsers.map((user, index) => 
             <UserCard 
               key={index}
               user={user}
