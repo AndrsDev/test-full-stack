@@ -59,9 +59,9 @@ function App() {
     <div className="pageContent">
       <header className={styles.header}>
         <h1>Users list</h1>
-        <input className={styles.searchBar} placeholder="Search..." value={searchString} onChange={e => setSearchString(e.target.value)}/>
+        <input data-testid="searchBar" className={styles.searchBar} placeholder="Search..." value={searchString} onChange={e => setSearchString(e.target.value)}/>
       </header>
-      <main className={styles.cardsGrid}>
+      <main data-testid="cardsGrid" className={styles.cardsGrid}>
         {
           filteredUsers.map((user, index) => 
             <UserCard 
@@ -77,7 +77,7 @@ function App() {
         {
           loadedAllUsers 
             ? <p>Loaded all users</p>
-            : <PrimaryButton label="Load More" onClick={handleLoadMoreUsers}/>
+            : <PrimaryButton data-testid="loadMoreBtn" label="Load More" onClick={handleLoadMoreUsers}/>
         }
       </div>
       {
