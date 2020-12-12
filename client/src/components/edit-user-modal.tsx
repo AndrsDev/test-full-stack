@@ -15,11 +15,10 @@ const mapsService = new MapsService(process.env.REACT_APP_MAPS_API_KEY!)
 
 interface Props {
   user: User,
-  isOpen: boolean,
   onClose: () => void,
 }
 
-function EditUserModal({ isOpen, user, onClose } : Props ) {
+function EditUserModal({ user, onClose } : Props ) {
   const [name, setName] = useState<string>(user.name);
   const [description, setDescription] = useState<string>(user.description);
   const [location, setLocation] = useState<string>(user.address);
@@ -62,7 +61,7 @@ function EditUserModal({ isOpen, user, onClose } : Props ) {
   }, [])
 
   return (    
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal onClose={onClose}>
       <div className={styles.modalContent}>
         <h1>Edit user</h1>
         <div className={styles.modalContentLayout}>

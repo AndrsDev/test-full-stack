@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styles from './App.module.css';
 import PrimaryButton from 'components/primary-button';
 import EditUserModal from 'components/edit-user-modal';
-import User, { UserEmpty } from 'models/user.model';
+import User from 'models/user.model';
 import UserCard from 'components/user-card';
 import Amplify from 'aws-amplify';
 import awsconfig from '../aws-exports.js';
@@ -12,23 +12,11 @@ import UsersService from 'services/users.service';
 Amplify.configure(awsconfig);
 const usersService = new UsersService();
 
-function App() {
-  const [searchString, setSearchString] = useState<string>("");
+
+function useFetchUsers(batchLength: number){
+  const [users, setUsers] = useState<Array<User>>([]);
   const [nextToken, setNextToken ] = useState<string | null>(null);
   const [loadedAllUsers, setLoadedAllUsers ] = useState<boolean>(false);
-  const [modalVisibility, setModalVisibility] = useState<boolean>(false);
-  const [editingUser, setEditingUser ] = useState<User>(UserEmpty);
-  const [users, setUsers] = useState<Array<User>>([]);
-  const batchLength: number = 6;
-
-  const openModal = (user: User) => {
-    setEditingUser(user);
-    setModalVisibility(true);
-  }
-
-  const closeModal = () => {
-    setModalVisibility(false);
-  }
 
   const loadUsers = async (token: string | null) => {
     if(!loadedAllUsers){
@@ -43,6 +31,35 @@ function App() {
     }
   }
 
+  return { nextToken, users, loadedAllUsers, loadUsers }
+}
+
+function useFilterUsers(users: Array<User>) {
+  const [searchString, setSearchString] = useState<string>("");
+  const [filteredUsers, setFilteredUsers ] = useState<Array<User>>([]);
+
+  useMemo(() => {
+    const result = users.filter(user => user.name.toLowerCase().includes(searchString.toLowerCase()));
+    setFilteredUsers(result);
+    return result;
+  }, [users, searchString])
+
+  return { searchString, setSearchString, filteredUsers }
+}
+
+function App() {
+  const { nextToken, users, loadedAllUsers, loadUsers } = useFetchUsers(6);
+  const { searchString, setSearchString, filteredUsers } = useFilterUsers(users);
+  const [ editingUser, setEditingUser ] = useState<User | null>(null);
+
+  const openModal = (user: User) => {
+    setEditingUser(user);
+  }
+
+  const closeModal = () => {
+    setEditingUser(null);
+  }
+
   const handleLoadMoreUsers = () => {
     setSearchString("");
     loadUsers(nextToken);
@@ -51,9 +68,6 @@ function App() {
   useEffect(() => {
     loadUsers(null);
   }, [])
-
-  
-  const filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchString.toLowerCase()));
 
   return (
     <div className="pageContent">
@@ -81,7 +95,7 @@ function App() {
         }
       </div>
       {
-        modalVisibility && <EditUserModal isOpen={modalVisibility} onClose={closeModal} user={editingUser} />
+        editingUser && <EditUserModal onClose={closeModal} user={editingUser} />
       }
     </div>
   );
