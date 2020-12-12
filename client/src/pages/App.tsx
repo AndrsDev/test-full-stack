@@ -36,12 +36,11 @@ function useFetchUsers(batchLength: number){
 
 function useFilterUsers(users: Array<User>) {
   const [searchString, setSearchString] = useState<string>("");
-  const [filteredUsers, setFilteredUsers ] = useState<Array<User>>([]);
+  const [filteredUsers, setFilteredUsers ] = useState<Array<User>>(users);
 
   useMemo(() => {
     const result = users.filter(user => user.name.toLowerCase().includes(searchString.toLowerCase()));
     setFilteredUsers(result);
-    return result;
   }, [users, searchString])
 
   return { searchString, setSearchString, filteredUsers }

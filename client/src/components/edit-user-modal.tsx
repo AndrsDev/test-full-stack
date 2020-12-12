@@ -31,11 +31,10 @@ function useLocation(address: string) {
       let result = await mapsService.geoCodeLocation(location);
       if(result) {
         setCoordinates(result)
-        return result
       }   
     } catch (e){
       console.error(e);
-    }
+    } 
   }, [location])
 
   const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => { 
