@@ -16,11 +16,11 @@ const usersService = new UsersService();
 function useFetchUsers(batchLength: number){
   const [users, setUsers] = useState<Array<User>>([]);
   const [nextToken, setNextToken ] = useState<string | null>(null);
-  const [loadedAllUsers, setLoadedAllUsers ] = useState<boolean>(false);
+  const [loadedAll, setLoadedAllUsers ] = useState<boolean>(false);
 
-  const loadUsers = async (token: string | null) => {
-    if(!loadedAllUsers){
-      const response = await usersService.getUsersList(batchLength, token)
+  const loadUsers = async () => {
+    if(!loadedAll){
+      const response = await usersService.getUsersList(batchLength, nextToken)
       setUsers(users.concat(response.items))
   
       if(response.token) {
@@ -31,7 +31,7 @@ function useFetchUsers(batchLength: number){
     }
   }
 
-  return { nextToken, users, loadedAllUsers, loadUsers }
+  return { users, loadedAll, loadUsers }
 }
 
 function useFilterUsers(users: Array<User>) {
@@ -48,7 +48,7 @@ function useFilterUsers(users: Array<User>) {
 }
 
 function App() {
-  const { nextToken, users, loadedAllUsers, loadUsers } = useFetchUsers(6);
+  const { users, loadedAll, loadUsers } = useFetchUsers(6);
   const { searchString, setSearchString, filteredUsers } = useFilterUsers(users);
   const [ editingUser, setEditingUser ] = useState<User | null>(null);
 
@@ -62,11 +62,11 @@ function App() {
 
   const handleLoadMoreUsers = () => {
     setSearchString("");
-    loadUsers(nextToken);
+    loadUsers();
   }
 
   useEffect(() => {
-    loadUsers(null);
+    loadUsers();
   }, [])
 
   return (
@@ -89,7 +89,7 @@ function App() {
       </main>
       <div className={styles.buttonContainer}>
         {
-          loadedAllUsers 
+          loadedAll
             ? <p>Loaded all users</p>
             : <PrimaryButton data-testid="loadMoreBtn" label="Load More" onClick={handleLoadMoreUsers}/>
         }

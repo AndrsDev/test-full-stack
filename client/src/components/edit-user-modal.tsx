@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styles from './edit-user-modal.module.css';
 import User from '../models/user.model';
 import Modal from './modal';
@@ -18,35 +18,40 @@ interface Props {
   onClose: () => void,
 }
 
-function EditUserModal({ user, onClose } : Props ) {
-  const [name, setName] = useState<string>(user.name);
-  const [description, setDescription] = useState<string>(user.description);
-  const [location, setLocation] = useState<string>(user.address);
+function useLocation(address: string) {
+  let typingTimer: any;
+  const [location, setLocation] = useState<string>(address);
   const [coordinates, setCoordinates] = useState({
     lat: 14.63,
     lng: -90.50
   })
 
-  let typingTimer: any;
-  
-  async function updateLocation (location: string) {
+  useMemo(async () => {
     try {
-      setLocation(location);
       let result = await mapsService.geoCodeLocation(location);
       if(result) {
         setCoordinates(result)
+        return result
       }   
     } catch (e){
       console.error(e);
     }
-  }
+  }, [location])
 
   const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => { 
     clearTimeout(typingTimer);
     if (event.target.value) {
-      typingTimer = setTimeout(() => updateLocation(event.target.value), 1000);
+      typingTimer = setTimeout(() => setLocation(event.target.value), 1000);
     }
   }
+
+  return { location, coordinates, handleLocationChange }
+}
+
+function EditUserModal({ user, onClose } : Props ) {
+  const [name, setName] = useState<string>(user.name);
+  const [description, setDescription] = useState<string>(user.description);
+  const { location, coordinates, handleLocationChange} = useLocation(user.address);
 
   const handleSave = () => {
     if(name) user.name = name;
@@ -55,10 +60,6 @@ function EditUserModal({ user, onClose } : Props ) {
     usersService.updateUser(user);
     onClose();
   }
-
-  useEffect(() => {
-    updateLocation(user.address)
-  }, [])
 
   return (    
     <Modal onClose={onClose}>
